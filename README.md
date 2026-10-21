@@ -56,6 +56,40 @@ Credenciais e strings de conexão devem ser configuradas por variáveis
 de ambiente ou mecanismos de gerenciamento de segredos. Nunca devem
 ser versionadas no repositório.
 
+## Configuração
+
+### Conexão com Databricks
+
+1. Copie `.env.example` para `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Para versão free do Databricks, configure:
+   ```bash
+   DATABRICKS_HOST=https://xxx.cloud.databricks.com
+   DATABRICKS_TOKEN=seu_token_aqui
+   DATABRICKS_WAREHOUSE_ID=seu_warehouse_id
+   ```
+
+3. Para versão paga com cluster, configure:
+   ```bash
+   DATABRICKS_HOST=https://xxx.cloud.databricks.com
+   DATABRICKS_TOKEN=seu_token_aqui
+   DATABRICKS_CLUSTER_ID=seu_cluster_id
+   ```
+
+4. Teste a conexão:
+   ```bash
+   # No Windows (com virtualenv ativado)
+   .venv\Scripts\python.exe scripts\test_databricks_connection.py
+   
+   # No Linux/Mac
+   python scripts/test_databricks_connection.py
+   ```
+
+Para mais detalhes, veja [docs/databricks_connection.md](docs/databricks_connection.md).
+
 ## Status
 
 Em desenvolvimento.
