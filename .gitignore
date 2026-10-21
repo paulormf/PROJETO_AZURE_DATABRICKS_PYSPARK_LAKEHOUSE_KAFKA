@@ -1,46 +1,6 @@
-﻿# Python
+.env
 .venv/
 __pycache__/
 *.py[cod]
-*.egg-info/
-dist/
-build/
-
-# Testes e qualidade
 .pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-
-# Credenciais e variáveis de ambiente
-.env
-.env.*
-!.env.example
-*.pem
-*.key
-credentials.json
-secrets/
-
-# Databricks
-.databricks/
-.databrickscfg
-
-# Spark
-spark-warehouse/
-metastore_db/
-derby.log/
-
-# IDE
-.vscode/
-.idea/
-
-# Sistema operacional
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Logs e arquivos temporários
-*.log
-*.tmp
-*.bak
+artifacts/
