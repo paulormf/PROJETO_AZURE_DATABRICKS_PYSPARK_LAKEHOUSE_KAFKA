@@ -362,14 +362,17 @@ resources:
               primary_keys: product_id
 
         - task_key: silver_carriers
+          depends_on:
+            - task_key: silver_products
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
               source_schema: dbo
               source_table: carriers
               primary_keys: carrier_id
-+
         - task_key: silver_brands
+          depends_on:
+            - task_key: silver_carriers
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -378,6 +381,8 @@ resources:
               primary_keys: brand_id
 
         - task_key: silver_campaigns
+          depends_on:
+            - task_key: silver_brands
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -386,6 +391,8 @@ resources:
               primary_keys: campaign_id
 
         - task_key: silver_categories
+          depends_on:
+            - task_key: silver_campaigns
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -394,6 +401,8 @@ resources:
               primary_keys: category_id
 
         - task_key: silver_customer_addresses
+          depends_on:
+            - task_key: silver_categories
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -402,6 +411,8 @@ resources:
               primary_keys: address_id
 
         - task_key: silver_customer_campaigns
+          depends_on:
+            - task_key: silver_customer_addresses
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -410,6 +421,8 @@ resources:
               primary_keys: ""
 
         - task_key: silver_customer_contacts
+          depends_on:
+            - task_key: silver_customer_campaigns
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -418,6 +431,8 @@ resources:
               primary_keys: contact_id
 
         - task_key: silver_customers
+          depends_on:
+            - task_key: silver_customer_contacts
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -426,6 +441,8 @@ resources:
               primary_keys: customer_id
 
         - task_key: silver_departments
+          depends_on:
+            - task_key: silver_customers
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -434,6 +451,8 @@ resources:
               primary_keys: department_id
 
         - task_key: silver_employees
+          depends_on:
+            - task_key: silver_departments
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -442,6 +461,8 @@ resources:
               primary_keys: employee_id
 
         - task_key: silver_inventory_balance
+          depends_on:
+            - task_key: silver_employees
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -450,6 +471,8 @@ resources:
               primary_keys: ""
 
         - task_key: silver_inventory_movements
+          depends_on:
+            - task_key: silver_inventory_balance
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -458,6 +481,8 @@ resources:
               primary_keys: movement_id
 
         - task_key: silver_order_items
+          depends_on:
+            - task_key: silver_inventory_movements
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -466,6 +491,8 @@ resources:
               primary_keys: order_item_id
 
         - task_key: silver_orders
+          depends_on:
+            - task_key: silver_order_items
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -474,6 +501,8 @@ resources:
               primary_keys: order_id
 
         - task_key: silver_payment_transactions
+          depends_on:
+            - task_key: silver_orders
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -482,6 +511,8 @@ resources:
               primary_keys: transaction_id
 
         - task_key: silver_payments
+          depends_on:
+            - task_key: silver_payment_transactions
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -490,6 +521,8 @@ resources:
               primary_keys: payment_id
 
         - task_key: silver_returns
+          depends_on:
+            - task_key: silver_payments
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -498,6 +531,8 @@ resources:
               primary_keys: return_id
 
         - task_key: silver_sales_channels
+          depends_on:
+            - task_key: silver_returns
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -506,6 +541,8 @@ resources:
               primary_keys: sales_channel_id
 
         - task_key: silver_shipments
+          depends_on:
+            - task_key: silver_sales_channels
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -514,6 +551,8 @@ resources:
               primary_keys: shipment_id
 
         - task_key: silver_suppliers
+          depends_on:
+            - task_key: silver_shipments
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
@@ -522,12 +561,21 @@ resources:
               primary_keys: supplier_id
 
         - task_key: silver_warehouses
+          depends_on:
+            - task_key: silver_suppliers
           notebook_task:
             notebook_path: ./notebooks/03_silver_delta.py
             base_parameters:
               source_schema: dbo
               source_table: warehouses
               primary_keys: warehouse_id
+
+    monitoring_quality:
+      name: "${bundle.name}-${bundle.target}-monitoring-quality"
+      tasks:
+        - task_key: monitoring_quality
+          notebook_task:
+            notebook_path: ./notebooks/04_monitoring_quality.py
 
 targets:
   dev:

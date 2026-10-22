@@ -35,8 +35,10 @@ for identifier_name, identifier_value in {
 
 # COMMAND ----------
 
-from pyspark.sql import functions as F
 from functools import reduce
+import uuid
+
+from pyspark.sql import functions as F
 
 bronze_path = (
     "s3://lakehouse-prj-db-kafka/"
@@ -46,11 +48,21 @@ silver_path = (
     "s3://lakehouse-prj-db-kafka/"
     f"lakehouse/silver/azure_sql/{source_schema}/{source_table}/"
 )
+audit_path = (
+    "s3://lakehouse-prj-db-kafka/"
+    f"lakehouse/control/ingestion_audit/{source_schema}/{source_table}/"
+)
+quality_path = (
+    "s3://lakehouse-prj-db-kafka/"
+    f"lakehouse/control/data_quality_results/{source_schema}/{source_table}/"
+)
+run_id = str(uuid.uuid4())
 
 print(f"Source table: {source_schema}.{source_table}")
 print(f"Bronze path: {bronze_path}")
 print(f"Silver path: {silver_path}")
 print(f"Primary keys: {primary_keys or '<none>'}")
+print(f"Run ID: {run_id}")
 
 df_bronze = spark.read.parquet(bronze_path)
 bronze_rows = df_bronze.count()
@@ -106,4 +118,63 @@ if validated_rows != silver_rows:
         f"found {validated_rows}."
     )
 
+audit_record = spark.createDataFrame(
+    [
+        (
+            run_id,
+            source_schema,
+            source_table,
+            bronze_rows,
+            silver_rows,
+            null_key_rows,
+            duplicate_or_invalid_rows,
+            "SUCCESS",
+        )
+    ],
+    schema=(
+        "run_id string, source_schema string, source_table string, "
+        "bronze_rows long, silver_rows long, null_key_rows long, "
+        "rows_removed long, status string"
+    ),
+).withColumn("processed_at", F.current_timestamp())
+
+quality_records = [
+    (
+        run_id,
+        source_schema,
+        source_table,
+        "primary_key_not_null",
+        not primary_keys or null_key_rows == 0,
+        null_key_rows,
+    ),
+    (
+        run_id,
+        source_schema,
+        source_table,
+        "silver_row_count_positive",
+        silver_rows > 0,
+        silver_rows,
+    ),
+    (
+        run_id,
+        source_schema,
+        source_table,
+        "silver_write_reconciliation",
+        validated_rows == silver_rows,
+        validated_rows,
+    ),
+]
+quality_record_df = spark.createDataFrame(
+    quality_records,
+    schema=(
+        "run_id string, source_schema string, source_table string, "
+        "check_name string, passed boolean, observed_value long"
+    ),
+).withColumn("checked_at", F.current_timestamp())
+
+audit_record.write.format("delta").mode("append").save(audit_path)
+quality_record_df.write.format("delta").mode("append").save(quality_path)
+
+print(f"Audit path: {audit_path}")
+print(f"Quality path: {quality_path}")
 print("Silver Delta validation succeeded.")
