@@ -358,7 +358,12 @@ resources:
               watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
 
     silver_two_tables:
-      name: "${bundle.name}-${bundle.target}-silver-two-tables"
+      name: "${bundle.name}-${bundle.target}-silver-gold"
+      schedule:
+        quartz_cron_expression: "0 0 2 * * ?"
+        timezone_id: "America/Sao_Paulo"
+        pause_status: UNPAUSED
+      max_concurrent_runs: 1
       environments:
         - environment_key: dbt_serverless
           spec:
@@ -583,19 +588,34 @@ resources:
               source_table: warehouses
               primary_keys: warehouse_id
 
-        - task_key: gold_dbt_after_silver
+        - task_key: register_silver_tables
           depends_on:
             - task_key: silver_warehouses
+          sql_task:
+            file:
+              path: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}/vscode/files/sql/register_silver_external_tables.sql"
+              source: WORKSPACE
+            warehouse_id: ${var.sql_warehouse_id}
+
+        - task_key: gold_dbt_after_silver
+          depends_on:
+            - task_key: register_silver_tables
           environment_key: dbt_serverless
           dbt_task:
             commands:
               - "dbt deps"
-              - "dbt build --select fct_sales_daily"
+              - "dbt build --select +fct_sales_daily"
             project_directory: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}/vscode/files/dbt"
             source: WORKSPACE
             warehouse_id: ${var.sql_warehouse_id}
             catalog: main
             schema: default
+
+        - task_key: monitoring_quality_after_gold
+          depends_on:
+            - task_key: gold_dbt_after_silver
+          notebook_task:
+            notebook_path: ./notebooks/04_monitoring_quality.py
 
     monitoring_quality:
       name: "${bundle.name}-${bundle.target}-monitoring-quality"
