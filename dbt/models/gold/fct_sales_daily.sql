@@ -32,17 +32,35 @@ products as (
         product_id,
         category_id,
         brand_id
-    from {{ source('silver', 'products') }}
+    from {{ ref('dim_product') }}
+),
+
+categories as (
+    select category_id, category_name
+    from {{ ref('dim_category') }}
+),
+
+brands as (
+    select brand_id, brand_name
+    from {{ ref('dim_brand') }}
+),
+
+sales_channels as (
+    select sales_channel_id, channel_name
+    from {{ ref('dim_sales_channel') }}
 ),
 
 sales as (
     select
         orders.order_id,
         orders.sales_channel_id,
+        sales_channels.channel_name,
         orders.order_date,
         orders.status,
         products.category_id,
+        categories.category_name,
         products.brand_id,
+        brands.brand_name,
         order_items.quantity,
         order_items.unit_price,
         order_items.discount,
@@ -53,13 +71,22 @@ sales as (
         on order_items.order_id = orders.order_id
     left join products
         on order_items.product_id = products.product_id
+    left join categories
+        on products.category_id = categories.category_id
+    left join brands
+        on products.brand_id = brands.brand_id
+    left join sales_channels
+        on orders.sales_channel_id = sales_channels.sales_channel_id
 )
 
 select
     order_date,
     sales_channel_id,
+    channel_name,
     category_id,
+    category_name,
     brand_id,
+    brand_name,
     status,
     count(distinct order_id) as order_count,
     sum(quantity) as item_quantity,
