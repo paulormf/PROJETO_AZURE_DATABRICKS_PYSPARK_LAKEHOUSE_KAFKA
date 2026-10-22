@@ -99,6 +99,9 @@ from sales
 group by
     order_date,
     sales_channel_id,
+    channel_name,
     category_id,
+    category_name,
     brand_id,
+    brand_name,
     status
