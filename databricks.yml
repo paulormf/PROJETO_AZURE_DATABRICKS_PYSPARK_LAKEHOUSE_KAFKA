@@ -350,6 +350,185 @@ resources:
               last_watermark: ""
               watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
 
+    silver_two_tables:
+      name: "${bundle.name}-${bundle.target}-silver-two-tables"
+      tasks:
+        - task_key: silver_products
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: products
+              primary_keys: product_id
+
+        - task_key: silver_carriers
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: carriers
+              primary_keys: carrier_id
++
+        - task_key: silver_brands
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: brands
+              primary_keys: brand_id
+
+        - task_key: silver_campaigns
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: campaigns
+              primary_keys: campaign_id
+
+        - task_key: silver_categories
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: categories
+              primary_keys: category_id
+
+        - task_key: silver_customer_addresses
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: customer_addresses
+              primary_keys: address_id
+
+        - task_key: silver_customer_campaigns
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: customer_campaigns
+              primary_keys: ""
+
+        - task_key: silver_customer_contacts
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: customer_contacts
+              primary_keys: contact_id
+
+        - task_key: silver_customers
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: customers
+              primary_keys: customer_id
+
+        - task_key: silver_departments
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: departments
+              primary_keys: department_id
+
+        - task_key: silver_employees
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: employees
+              primary_keys: employee_id
+
+        - task_key: silver_inventory_balance
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: inventory_balance
+              primary_keys: ""
+
+        - task_key: silver_inventory_movements
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: inventory_movements
+              primary_keys: movement_id
+
+        - task_key: silver_order_items
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: order_items
+              primary_keys: order_item_id
+
+        - task_key: silver_orders
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: orders
+              primary_keys: order_id
+
+        - task_key: silver_payment_transactions
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: payment_transactions
+              primary_keys: transaction_id
+
+        - task_key: silver_payments
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: payments
+              primary_keys: payment_id
+
+        - task_key: silver_returns
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: returns
+              primary_keys: return_id
+
+        - task_key: silver_sales_channels
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: sales_channels
+              primary_keys: sales_channel_id
+
+        - task_key: silver_shipments
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: shipments
+              primary_keys: shipment_id
+
+        - task_key: silver_suppliers
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: suppliers
+              primary_keys: supplier_id
+
+        - task_key: silver_warehouses
+          notebook_task:
+            notebook_path: ./notebooks/03_silver_delta.py
+            base_parameters:
+              source_schema: dbo
+              source_table: warehouses
+              primary_keys: warehouse_id
+
 targets:
   dev:
     mode: development
