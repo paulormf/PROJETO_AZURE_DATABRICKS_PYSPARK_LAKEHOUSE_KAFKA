@@ -1,0 +1,55 @@
+# This is a Declarative Automation Bundle definition for PROJETO_AZURE_DATABRICKS_PYSPARK_LAKEHOUSE_KAFKA.
+# The Databricks extension requires databricks.yml configuration file.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+
+bundle:
+  name: PROJETO_AZURE_DATABRICKS_PYSPARK_LAKEHOUSE_KAFKA
+
+sync:
+  exclude:
+    - .pytest_cache/**
+    - .venv/**
+    - .git/**
+    - .databricks/**
+    - artifacts/**
+    - __pycache__/**
+    - .env
+
+variables:
+  azsql_host:
+    description: Host público do Azure SQL por ambiente.
+    default: "treinamento.database.windows.net"
+  azsql_database:
+    description: Nome do banco de dados Azure SQL por ambiente.
+    default: "free-sql-db-5098886"
+
+resources:
+  jobs:
+    test_azsql_to_s3:
+      name: "${bundle.name}-${bundle.target}-test-azsql-to-s3"
+      parameters:
+        - name: sql_host
+          default: ${var.azsql_host}
+        - name: sql_database
+          default: ${var.azsql_database}
+      tasks:
+        - task_key: test_azsql_to_s3
+          notebook_task:
+            notebook_path: ./notebooks/01_test_azsql_to_s3.py
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-b5359fb2-170e.cloud.databricks.com
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}/vscode
+    variables:
+      azsql_host: "treinamento.database.windows.net"
+      azsql_database: "free-sql-db-5098886"
+
+  ## Optionally, there could be 'staging' or 'prod' targets here.
+  #
+  # prod:
+  #   workspace:
+  #     host: https://dbc-b5359fb2-170e.cloud.databricks.com
