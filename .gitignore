@@ -9,6 +9,7 @@ artifacts/
 
 # dbt local files and credentials
 dbt/profiles.yml
+dbt/.user.yml
 dbt/target/
 dbt/logs/
 dbt/dbt_packages/
