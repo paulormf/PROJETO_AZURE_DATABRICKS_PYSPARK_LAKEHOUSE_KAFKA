@@ -55,11 +55,300 @@ resources:
         - name: last_watermark
           default: ""
         - name: watermark_path
-          default: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks/"
+          default: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
       tasks:
         - task_key: bronze_ingestion
           notebook_task:
             notebook_path: ./notebooks/02_bronze_ingestion.py
+
+    bronze_two_tables:
+      name: "${bundle.name}-${bundle.target}-bronze-two-tables"
+      tasks:
+        - task_key: bronze_products
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: products
+              load_mode: incremental
+              watermark_column: updated_at
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_carriers
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: carriers
+              load_mode: full
+              watermark_column: ""
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_brands
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: brands
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_campaigns
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: campaigns
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_categories
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: categories
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_customer_addresses
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: customer_addresses
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_customer_campaigns
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: customer_campaigns
+              load_mode: full
+              watermark_column: ""
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_customer_contacts
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: customer_contacts
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_customers
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: customers
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_departments
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: departments
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_employees
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: employees
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_inventory_balance
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: inventory_balance
+              load_mode: full
+              watermark_column: ""
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_inventory_movements
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: inventory_movements
+              load_mode: full
+              watermark_column: ""
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_order_items
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: order_items
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_orders
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: orders
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_payment_transactions
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: payment_transactions
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_payments
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: payments
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_returns
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: returns
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_sales_channels
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: sales_channels
+              load_mode: full
+              watermark_column: ""
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_shipments
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: shipments
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_suppliers
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: suppliers
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+
+        - task_key: bronze_warehouses
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+            base_parameters:
+              sql_host: ${var.azsql_host}
+              sql_database: ${var.azsql_database}
+              source_schema: dbo
+              source_table: warehouses
+              load_mode: incremental
+              watermark_column: "updated_at"
+              last_watermark: ""
+              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
 
 targets:
   dev:

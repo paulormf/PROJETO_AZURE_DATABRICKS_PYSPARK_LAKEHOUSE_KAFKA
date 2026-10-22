@@ -9,7 +9,7 @@ dbutils.widgets.text("watermark_column", "")
 dbutils.widgets.text("last_watermark", "")
 dbutils.widgets.text(
     "watermark_path",
-    "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks/",
+    "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/",
 )
 
 source_schema = dbutils.widgets.get("source_schema").strip()
@@ -17,7 +17,7 @@ source_table = dbutils.widgets.get("source_table").strip()
 load_mode = dbutils.widgets.get("load_mode").strip().lower()
 watermark_column = dbutils.widgets.get("watermark_column").strip()
 last_watermark = dbutils.widgets.get("last_watermark").strip()
-watermark_path = dbutils.widgets.get("watermark_path").strip()
+watermark_root = dbutils.widgets.get("watermark_path").strip()
 
 if load_mode not in {"full", "incremental"}:
     raise ValueError("load_mode must be 'full' or 'incremental'.")
@@ -40,6 +40,10 @@ for identifier_name, identifier_value in {
         raise ValueError(
             f"Invalid SQL identifier in {identifier_name}: {identifier_value}"
         )
+
+watermark_path = (
+    f"{watermark_root.rstrip('/')}/{source_schema}/{source_table}/"
+)
 
 # COMMAND ----------
 
@@ -71,9 +75,13 @@ def path_exists(path: str) -> bool:
         return False
 
 
+def delta_table_exists(path: str) -> bool:
+    return path_exists(f"{path.rstrip('/')}/_delta_log/")
+
+
 control_watermark = ""
 if load_mode == "incremental" and not last_watermark:
-    if path_exists(watermark_path):
+    if delta_table_exists(watermark_path):
         df_watermarks = (
             spark.read.format("delta").load(watermark_path)
             .where(
@@ -182,7 +190,7 @@ if load_mode == "incremental":
             ),
         ).withColumn("updated_at", F.current_timestamp())
 
-        if path_exists(watermark_path):
+        if delta_table_exists(watermark_path):
             from delta.tables import DeltaTable
 
             (
