@@ -50,6 +50,12 @@ df_test = (
 
 display(df_test)
 
+rows_read = df_test.count()
+print(f"Rows read from Azure SQL: {rows_read}")
+
+if rows_read == 0:
+    raise ValueError(f"The source table {source_table} returned no rows.")
+
 # COMMAND ----------
 
 (
@@ -61,4 +67,19 @@ display(df_test)
 )
 
 print(f"Parquet gravado em: {test_output_path}")
-display(dbutils.fs.ls(test_output_path))
+
+output_entries = dbutils.fs.ls(test_output_path)
+parquet_files = [
+    entry.path
+    for entry in output_entries
+    if entry.path.endswith(".parquet")
+]
+
+print(f"Parquet files generated: {len(parquet_files)}")
+for parquet_file in parquet_files:
+    print(parquet_file)
+
+if not parquet_files:
+    raise FileNotFoundError(
+        f"No Parquet files found at {test_output_path}."
+    )

@@ -37,6 +37,30 @@ resources:
           notebook_task:
             notebook_path: ./notebooks/01_test_azsql_to_s3.py
 
+    bronze_ingestion:
+      name: "${bundle.name}-${bundle.target}-bronze-ingestion"
+      parameters:
+        - name: sql_host
+          default: ${var.azsql_host}
+        - name: sql_database
+          default: ${var.azsql_database}
+        - name: source_schema
+          default: dbo
+        - name: source_table
+          default: carriers
+        - name: load_mode
+          default: full
+        - name: watermark_column
+          default: ""
+        - name: last_watermark
+          default: ""
+        - name: watermark_path
+          default: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks/"
+      tasks:
+        - task_key: bronze_ingestion
+          notebook_task:
+            notebook_path: ./notebooks/02_bronze_ingestion.py
+
 targets:
   dev:
     mode: development
