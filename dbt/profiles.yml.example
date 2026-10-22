@@ -1,0 +1,20 @@
+lakehouse_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: databricks
+      catalog: main
+      schema: default
+      host: dbc-b5359fb2-170e.cloud.databricks.com
+      http_path: /sql/1.0/warehouses/f2e5f28843021f70
+      auth_type: oauth
+      threads: 1
+
+    production:
+      type: databricks
+      catalog: main
+      schema: default
+      host: dbc-b5359fb2-170e.cloud.databricks.com
+      http_path: /sql/1.0/warehouses/f2e5f28843021f70
+      token: "{{ env_var('DBT_ACCESS_TOKEN') }}"
+      threads: 1

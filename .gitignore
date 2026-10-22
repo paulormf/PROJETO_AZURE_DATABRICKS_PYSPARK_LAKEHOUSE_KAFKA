@@ -6,3 +6,9 @@ __pycache__/
 artifacts/
 
 .databricks
+
+# dbt local files and credentials
+dbt/profiles.yml
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/

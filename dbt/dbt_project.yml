@@ -1,0 +1,27 @@
+name: lakehouse_analytics
+version: "1.0.0"
+config-version: 2
+
+profile: lakehouse_analytics
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  # Ajustaremos este catálogo depois de confirmar o catálogo Unity Catalog
+  # disponível no workspace.
+  lakehouse_catalog: main
+
+models:
+  lakehouse_analytics:
+    +persist_docs:
+      relation: true
+      columns: true
+    gold:
+      +schema: gold
+      +materialized: table

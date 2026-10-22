@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: fct_sales_daily
+    description: "Fato diário de vendas sem dados pessoais de clientes."
+    columns:
+      - name: order_date
+        tests:
+          - not_null
+      - name: order_count
+        tests:
+          - not_null
+      - name: net_sales
+        tests:
+          - not_null
