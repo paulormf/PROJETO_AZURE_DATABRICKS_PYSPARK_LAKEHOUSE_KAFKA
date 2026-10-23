@@ -5,17 +5,23 @@
 # Preencha somente estes dois valores. Nunca coloque usuário ou senha aqui.
 dbutils.widgets.text("sql_host", "")
 dbutils.widgets.text("sql_database", "")
+dbutils.widgets.text(
+    "lakehouse_root",
+    "s3://lakehouse-prj-db-kafka/lakehouse/dev",
+)
 
 sql_host = dbutils.widgets.get("sql_host").strip()
 sql_database = dbutils.widgets.get("sql_database").strip()
+lakehouse_root = dbutils.widgets.get("lakehouse_root").strip().rstrip("/")
 
 if not sql_host or not sql_database:
     raise ValueError("Os parâmetros sql_host e sql_database são obrigatórios.")
+if not lakehouse_root:
+    raise ValueError("O parâmetro lakehouse_root é obrigatório.")
 
 source_table = "dbo.products"
 test_output_path = (
-    "s3://lakehouse-prj-db-kafka/"
-    "lakehouse/bronze/azure_sql/dbo/products/_test/"
+    f"{lakehouse_root}/bronze/azure_sql/dbo/products/_test/"
 )
 
 # COMMAND ----------
