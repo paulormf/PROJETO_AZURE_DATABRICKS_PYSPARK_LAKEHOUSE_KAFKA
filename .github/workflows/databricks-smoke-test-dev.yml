@@ -1,0 +1,25 @@
+name: Smoke test Databricks - Dev
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    name: Executar teste de conectividade Azure SQL
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Databricks CLI
+        uses: databricks/setup-cli@v1.22.1
+
+      - name: Executar job de smoke test
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: databricks bundle run --target dev jobs.test_azsql_to_s3
