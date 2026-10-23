@@ -624,6 +624,17 @@ resources:
           notebook_task:
             notebook_path: ./notebooks/04_monitoring_quality.py
 
+    performance_baseline:
+      name: "${bundle.name}-${bundle.target}-performance-baseline"
+      tasks:
+        - task_key: performance_baseline
+          notebook_task:
+            notebook_path: ./notebooks/06_performance_baseline.py
+            base_parameters:
+              source_schema: dbo
+              source_table: order_items
+              primary_keys: order_item_id
+
 targets:
   dev:
     mode: development

@@ -38,6 +38,7 @@ for identifier_name, identifier_value in {
 from functools import reduce
 import uuid
 
+from pyspark import StorageLevel
 from pyspark.sql import functions as F
 
 bronze_path = (
@@ -65,8 +66,6 @@ print(f"Primary keys: {primary_keys or '<none>'}")
 print(f"Run ID: {run_id}")
 
 df_bronze = spark.read.parquet(bronze_path)
-bronze_rows = df_bronze.count()
-print(f"Bronze rows read: {bronze_rows}")
 
 missing_columns = [
     key for key in primary_keys if key not in df_bronze.columns
@@ -81,16 +80,27 @@ if primary_keys:
         lambda left, right: left & right,
         [F.col(key).isNotNull() for key in primary_keys],
     )
-    null_key_rows = df_bronze.filter(~valid_key_condition).count()
+    bronze_metrics = df_bronze.agg(
+        F.count(F.lit(1)).alias("bronze_rows"),
+        F.sum(
+            F.when(~valid_key_condition, F.lit(1)).otherwise(F.lit(0))
+        ).alias("null_key_rows"),
+    ).first()
+    bronze_rows = int(bronze_metrics["bronze_rows"])
+    null_key_rows = int(bronze_metrics["null_key_rows"] or 0)
     df_silver = (
         df_bronze
         .filter(valid_key_condition)
         .dropDuplicates(primary_keys)
     )
 else:
+    bronze_rows = df_bronze.count()
     null_key_rows = 0
     df_silver = df_bronze.dropDuplicates()
 
+print(f"Bronze rows read: {bronze_rows}")
+
+df_silver = df_silver.persist(StorageLevel.MEMORY_AND_DISK)
 silver_rows = df_silver.count()
 duplicate_or_invalid_rows = bronze_rows - silver_rows
 print(f"Rows with null primary key: {null_key_rows}")
@@ -108,6 +118,7 @@ df_silver = df_silver.withColumn(
     .option("overwriteSchema", "true")
     .save(silver_path)
 )
+df_silver.unpersist()
 
 validated_rows = spark.read.format("delta").load(silver_path).count()
 print(f"Silver rows written: {validated_rows}")
