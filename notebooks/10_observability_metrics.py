@@ -53,6 +53,15 @@ def read_delta_paths(paths: list[str]) -> DataFrame | None:
     )
 
 
+def path_exists(path: str) -> bool:
+    """Verifica o caminho antes da leitura lazy do Spark."""
+    try:
+        dbutils.fs.ls(path)
+        return True
+    except Exception:
+        return False
+
+
 batch_audit = read_delta_paths([
     f"{LAKEHOUSE_ROOT}/control/ingestion_audit/dbo/{table}/"
     for table in TABLES
@@ -80,10 +89,14 @@ if batch_quality is not None:
     )
     print(f"Batch quality rows: {batch_quality.count()}")
 
-try:
+if path_exists(STREAMING_QUALITY_PATH):
     streaming_quality = spark.read.format("delta").load(STREAMING_QUALITY_PATH)
-except Exception:
+else:
     streaming_quality = None
+    print(
+        "Qualidade de streaming ainda não disponível; "
+        f"caminho ausente: {STREAMING_QUALITY_PATH}"
+    )
 
 if streaming_quality is not None:
     (
