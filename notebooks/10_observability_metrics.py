@@ -12,9 +12,15 @@ dbutils.widgets.text(
     "lakehouse_root",
     "s3://lakehouse-prj-db-kafka/lakehouse/dev",
 )
+dbutils.widgets.text("catalog", "main")
+dbutils.widgets.text("monitoring_schema", "dev_monitoring")
 LAKEHOUSE_ROOT = dbutils.widgets.get("lakehouse_root").strip().rstrip("/")
+CATALOG = dbutils.widgets.get("catalog").strip()
+MONITORING_SCHEMA = dbutils.widgets.get("monitoring_schema").strip()
 if not LAKEHOUSE_ROOT:
     raise ValueError("lakehouse_root is required.")
+if not CATALOG or not MONITORING_SCHEMA:
+    raise ValueError("catalog and monitoring_schema are required.")
 
 
 TABLES = [
@@ -48,11 +54,11 @@ def read_delta_paths(paths: list[str]) -> DataFrame | None:
 
 
 batch_audit = read_delta_paths([
-    f"s3://lakehouse-prj-db-kafka/lakehouse/control/ingestion_audit/dbo/{table}/"
+    f"{LAKEHOUSE_ROOT}/control/ingestion_audit/dbo/{table}/"
     for table in TABLES
 ])
 batch_quality = read_delta_paths([
-    f"s3://lakehouse-prj-db-kafka/lakehouse/control/data_quality_results/dbo/{table}/"
+    f"{LAKEHOUSE_ROOT}/control/data_quality_results/dbo/{table}/"
     for table in TABLES
 ])
 
@@ -113,7 +119,7 @@ summary = spark.createDataFrame(
 ).withColumn("observed_at", F.current_timestamp())
 
 summary.write.format("delta").mode("append").save(
-    "s3://lakehouse-prj-db-kafka/lakehouse/control/observability/pipeline_summary/"
+    f"{LAKEHOUSE_ROOT}/control/observability/pipeline_summary/"
 )
 
 display(summary)

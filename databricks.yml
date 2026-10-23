@@ -746,15 +746,18 @@ resources:
           notebook_task:
             notebook_path: ./notebooks/10_observability_metrics.py
             base_parameters:
+              catalog: ${var.unity_catalog}
+              monitoring_schema: ${var.monitoring_schema}
               lakehouse_root: ${var.lakehouse_root}
         - task_key: register_observability_tables
           depends_on:
             - task_key: consolidate_observability
-          sql_task:
-            file:
-              path: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}/vscode/files/sql/register_observability_tables.sql"
-              source: WORKSPACE
-            warehouse_id: ${var.sql_warehouse_id}
+          notebook_task:
+            notebook_path: ./notebooks/12_register_observability_tables.py
+            base_parameters:
+              catalog: ${var.unity_catalog}
+              monitoring_schema: ${var.monitoring_schema}
+              lakehouse_root: ${var.lakehouse_root}
 
 targets:
   dev:
