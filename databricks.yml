@@ -29,6 +29,18 @@ variables:
   sql_warehouse_id:
     description: ID do SQL Warehouse usado pelo dbt.
     default: "f2e5f28843021f70"
+  lakehouse_root:
+    description: Prefixo S3 do ambiente atual.
+    default: "s3://lakehouse-prj-db-kafka/lakehouse/dev"
+  unity_catalog:
+    description: Catálogo lógico usado pelo ambiente atual.
+    default: "main"
+  gold_schema:
+    description: Schema Gold usado pelo ambiente atual.
+    default: "default_gold"
+  monitoring_schema:
+    description: Schema de monitoramento usado pelo ambiente atual.
+    default: "monitoring"
 
 resources:
   jobs:
@@ -732,9 +744,21 @@ targets:
       azsql_host: "treinamento.database.windows.net"
       azsql_database: "free-sql-db-5098886"
       sql_warehouse_id: "f2e5f28843021f70"
+      lakehouse_root: "s3://lakehouse-prj-db-kafka/lakehouse/dev"
+      unity_catalog: "main"
+      gold_schema: "dev_gold"
+      monitoring_schema: "dev_monitoring"
 
-  ## Opcionalmente, podem ser adicionados alvos 'staging' ou 'prod' aqui.
-  #
-  # prod:
-  #   workspace:
-  #     host: https://dbc-b5359fb2-170e.cloud.databricks.com
+  prod:
+    mode: development
+    workspace:
+      host: https://dbc-b5359fb2-170e.cloud.databricks.com
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}/vscode
+    variables:
+      azsql_host: "treinamento.database.windows.net"
+      azsql_database: "free-sql-db-5098886"
+      sql_warehouse_id: "f2e5f28843021f70"
+      lakehouse_root: "s3://lakehouse-prj-db-kafka/lakehouse/prod"
+      unity_catalog: "main"
+      gold_schema: "prod_gold"
+      monitoring_schema: "prod_monitoring"
