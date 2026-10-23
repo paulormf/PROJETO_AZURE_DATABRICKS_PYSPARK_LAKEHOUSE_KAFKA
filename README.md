@@ -226,4 +226,14 @@ Credenciais e tokens não devem ser versionados. O arquivo `.env` é local e est
 
 ## Status atualizado do Streaming
 
-O fluxo Kinesis ja foi implementado ate a Silver Delta e registrado no Unity Catalog. A proxima etapa e criar uma Gold de Streaming separada, sem misturar automaticamente os dados com `order_items` do Azure SQL.
+O fluxo Kinesis ja foi implementado ate a Gold de Streaming e registrado no Unity Catalog. A Gold permanece separada do fato `fct_sales_daily` e nao mistura automaticamente os dados com `order_items` do Azure SQL.
+
+O Job tambem executa o notebook [09_kinesis_quality_monitoring.py](notebooks/09_kinesis_quality_monitoring.py), que valida chaves, duplicidades, valores, timestamps e a existencia de registros na Gold.
+
+## Observabilidade
+
+O notebook [10_observability_metrics.py](notebooks/10_observability_metrics.py) consolida metricas dos fluxos batch e Streaming em `main.monitoring`. As consultas para montar um dashboard no Databricks SQL estao em [observability_dashboard_queries.sql](sql/observability_dashboard_queries.sql).
+
+O dashboard deve apresentar status de execucao, volume processado, qualidade, falhas e disponibilidade dos pipelines. Planilhas ficam restritas a analises pontuais; o historico oficial permanece em tabelas Delta governadas.
+
+As consultas de alerta estao em [alert_queries.sql](sql/alert_queries.sql). Cada consulta deve ser criada como um SQL Alert no Databricks, com notificacao para falha de qualidade, falha de ingestao ou ausencia de dados na Gold.
