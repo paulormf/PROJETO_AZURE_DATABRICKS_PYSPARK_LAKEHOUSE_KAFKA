@@ -1,6 +1,6 @@
-# This is a Declarative Automation Bundle definition for PROJETO_AZURE_DATABRICKS_PYSPARK_LAKEHOUSE_KAFKA.
-# The Databricks extension requires databricks.yml configuration file.
-# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+# Esta é a definição do Declarative Automation Bundle de PROJETO_AZURE_DATABRICKS_PYSPARK_LAKEHOUSE_KAFKA.
+# A extensão do Databricks exige o arquivo de configuração databricks.yml.
+# Consulte https://docs.databricks.com/dev-tools/bundles/index.html para obter a documentação.
 
 bundle:
   name: PROJETO_AZURE_DATABRICKS_PYSPARK_LAKEHOUSE_KAFKA
@@ -647,7 +647,7 @@ targets:
       azsql_database: "free-sql-db-5098886"
       sql_warehouse_id: "f2e5f28843021f70"
 
-  ## Optionally, there could be 'staging' or 'prod' targets here.
+  ## Opcionalmente, podem ser adicionados alvos 'staging' ou 'prod' aqui.
   #
   # prod:
   #   workspace:

@@ -27,7 +27,7 @@ if load_mode == "incremental" and not watermark_column:
         "watermark_column is required for incremental loads."
     )
 
-# These values are controlled by the Job parameters, not by user input.
+# Estes valores são controlados pelos parâmetros do Job, e não pela entrada do usuário.
 identifier_pattern = r"^[A-Za-z_][A-Za-z0-9_]*$"
 import re
 
@@ -100,7 +100,7 @@ if load_mode == "incremental" and not last_watermark:
     else:
         print("No previous watermark found in control table.")
 
-# A runtime parameter remains available as an explicit test override.
+# Um parâmetro de execução continua disponível como substituição explícita para testes.
 print(f"Watermark control path: {watermark_path}")
 
 qualified_table = f"[{source_schema}].[{source_table}]"
@@ -154,7 +154,7 @@ df_bronze = (
     .withColumn("_load_mode", F.lit(load_mode))
 )
 
-# The first incremental run bootstraps the target. Later incremental runs append.
+# A primeira execução incremental inicializa o destino. As execuções seguintes adicionam dados.
 write_mode = "overwrite" if load_mode == "full" or not last_watermark else "append"
 
 (
