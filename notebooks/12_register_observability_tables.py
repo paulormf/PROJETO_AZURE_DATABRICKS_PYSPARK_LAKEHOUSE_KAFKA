@@ -36,13 +36,30 @@ tables = [
     "pipeline_summary",
 ]
 
+
+def delta_path_has_columns(path: str) -> bool:
+    """Verifica se o caminho possui um Delta com esquema legivel."""
+    try:
+        dbutils.fs.ls(path)
+        return len(spark.read.format("delta").load(path).schema.fields) > 0
+    except Exception:
+        return False
+
+
+registered_tables = []
 for table in tables:
     location = f"{lakehouse_root}/control/observability/{table}/"
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS {namespace}.{table} "
-        f"USING DELTA LOCATION '{location}'"
-    )
+    if delta_path_has_columns(location):
+        spark.sql(
+            f"CREATE OR REPLACE TABLE {namespace}.{table} "
+            f"USING DELTA LOCATION '{location}'"
+        )
+        registered_tables.append(table)
+    else:
+        # Evita manter no Unity Catalog uma tabela sem colunas.
+        spark.sql(f"DROP TABLE IF EXISTS {namespace}.{table}")
+        print(f"Tabela ignorada sem dados Delta: {table}")
 
 print(f"Schema de monitoramento: {namespace}")
 print(f"Raiz do Lakehouse: {lakehouse_root}")
-print(f"Tabelas registradas: {len(tables)}")
+print(f"Tabelas registradas: {len(registered_tables)}")
