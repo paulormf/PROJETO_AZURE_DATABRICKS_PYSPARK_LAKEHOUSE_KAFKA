@@ -123,14 +123,23 @@ def path_exists(path: str) -> bool:
         return False
 
 
-if not path_exists(silver_path):
+def target_has_columns(path: str) -> bool:
+    """Confirma que o Delta existente possui um esquema utilizável."""
+    try:
+        return len(spark.read.format("delta").load(path).schema.fields) > 0
+    except Exception:
+        return False
+
+
+if not path_exists(silver_path) or not target_has_columns(silver_path):
     (
         df_silver.write
         .format("delta")
         .mode("overwrite")
+        .option("overwriteSchema", "true")
         .save(silver_path)
     )
-    print("Tabela Silver Delta criada.")
+    print("Tabela Silver Delta inicializada ou recriada com o esquema dos eventos.")
 else:
     from delta.tables import DeltaTable
 
