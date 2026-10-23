@@ -66,3 +66,25 @@ models:
               arguments:
                 to: ref('dim_sales_channel')
                 field: sales_channel_id
+
+  - name: fct_streaming_sales
+    description: "Fato Gold separado para eventos de vendas recebidos pelo Kinesis."
+    columns:
+      - name: event_date
+        tests:
+          - not_null
+      - name: sales_channel_id
+        tests:
+          - not_null
+      - name: product_id
+        tests:
+          - not_null
+      - name: event_count
+        tests:
+          - not_null
+      - name: order_count
+        tests:
+          - not_null
+      - name: gross_sales
+        tests:
+          - not_null

@@ -2,11 +2,42 @@
 
 Projeto de engenharia de dados construído de ponta a ponta para demonstrar ingestão, processamento, qualidade, governança, modelagem analítica e implantação com Databricks.
 
-![Arquitetura do projeto](docs/architecture.svg)
+![Arquitetura atual do projeto](docs/architecture_streaming.svg)
+
+## Fluxos atuais
+
+O projeto possui dois fluxos independentes:
+
+```text
+Batch:     Azure SQL -> Databricks -> S3 Parquet -> Silver Delta -> Gold dbt
+Streaming: Kinesis  -> Databricks -> S3 Parquet -> Silver Delta -> Gold separado
+```
+
+O fluxo de Streaming representa uma fonte de eventos independente do Azure SQL. Ele nao preenche automaticamente a tabela `order_items`.
+
+### Streaming Silver
+
+Os eventos do Kinesis sao normalizados pelo notebook [08_kinesis_silver_delta.py](notebooks/08_kinesis_silver_delta.py) e gravados em:
+
+```text
+s3://lakehouse-prj-db-kafka/lakehouse/silver/kinesis/sales-events/
+```
+
+A tabela Delta e registrada no Unity Catalog como:
+
+```text
+main.silver.kinesis_sales_events
+```
+
+Essa camada usa `event_id` e `item_position` para deduplicacao e `MERGE` idempotente. A futura camada Gold de Streaming sera mantida separada do fato batch do Azure SQL.
+
+### Streaming Gold
+
+O modelo dbt `fct_streaming_sales` cria uma tabela analitica separada para os eventos Kinesis, agregando vendas por data, canal e produto. Ele nao substitui nem complementa automaticamente o fato `fct_sales_daily` originado do Azure SQL.
 
 ## Visão geral
 
-O fluxo atual extrai dados de um Azure SQL Database, grava a camada Bronze em Amazon S3 e transforma os dados em tabelas Delta nas camadas Silver e Gold.
+O projeto possui dois fluxos independentes: um pipeline batch que extrai dados do Azure SQL Database e um fluxo de Streaming orientado a eventos, alimentado pelo Amazon Kinesis. Ambos gravam no Amazon S3 e processam dados nas camadas Bronze, Silver e Gold.
 
 O projeto foi desenvolvido no VS Code usando Databricks Asset Bundles. A execução é feita no Databricks Serverless e a modelagem analítica da camada Gold utiliza dbt.
 
@@ -38,7 +69,9 @@ Databricks + PySpark
 - Databricks Asset Bundles: implantação como código.
 - Pytest: testes locais da aplicação e dos planos de ingestão.
 
-Kinesis será adicionado em uma etapa posterior como fluxo de streaming separado do pipeline batch.
+- Amazon Kinesis Data Streams: origem de eventos de vendas em Streaming.
+- boto3: produtor local de eventos para o Kinesis.
+- AvailableNow: processamento finito de eventos no Databricks Serverless Free.
 
 ## Camadas de dados
 
@@ -185,6 +218,12 @@ dbt build --select +fct_sales_daily
 
 Credenciais e tokens não devem ser versionados. O arquivo `.env` é local e está excluído do Bundle; utilize `.env.example` como referência.
 
-## Próxima etapa
+## Próximas etapas
 
-A próxima evolução será adicionar Kinesis com Structured Streaming, checkpoint e carga incremental na Bronze. O fluxo Kinesis será mantido separado do fluxo batch para permitir operação, monitoramento e reprocessamento independentes.
+- Criar o modelo Gold separado para os eventos de Streaming.
+- Adicionar testes dbt para `main.silver.kinesis_sales_events`.
+- Definir uma estratégia de consolidação somente se houver contrato de dados entre Kinesis e Azure SQL.
+
+## Status atualizado do Streaming
+
+O fluxo Kinesis ja foi implementado ate a Silver Delta e registrado no Unity Catalog. A proxima etapa e criar uma Gold de Streaming separada, sem misturar automaticamente os dados com `order_items` do Azure SQL.

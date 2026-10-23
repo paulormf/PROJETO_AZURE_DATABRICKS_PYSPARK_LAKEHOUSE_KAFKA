@@ -44,6 +44,10 @@ CREATE TABLE IF NOT EXISTS main.silver.suppliers
 USING DELTA
 LOCATION 's3://lakehouse-prj-db-kafka/lakehouse/silver/azure_sql/dbo/suppliers/';
 
+CREATE TABLE IF NOT EXISTS main.silver.kinesis_sales_events
+USING DELTA
+LOCATION 's3://lakehouse-prj-db-kafka/lakehouse/silver/kinesis/sales-events/';
+
 CREATE SCHEMA IF NOT EXISTS main.governed;
 
 CREATE OR REPLACE VIEW main.governed.v_customers_analytics AS

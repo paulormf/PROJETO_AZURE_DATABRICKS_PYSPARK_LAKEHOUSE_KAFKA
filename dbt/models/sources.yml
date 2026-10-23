@@ -12,3 +12,4 @@ sources:
       - name: categories
       - name: brands
       - name: sales_channels
+      - name: kinesis_sales_events

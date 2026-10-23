@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="980" viewBox="0 0 1800 980" role="img" aria-labelledby="title desc">
+  <title id="title">Arquitetura atual do projeto Lakehouse com Batch e Streaming</title>
+  <desc id="desc">Fluxos separados de Azure SQL em batch e Amazon Kinesis em streaming, processados pelo Databricks e armazenados no Amazon S3, com Delta Lake, dbt e Unity Catalog.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#08111f"/><stop offset="1" stop-color="#172554"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000" flood-opacity=".32"/></filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#93c5fd"/></marker>
+    <style>
+      .title { font: 700 34px Arial, sans-serif; fill: #f8fafc; }
+      .subtitle { font: 400 17px Arial, sans-serif; fill: #cbd5e1; }
+      .section { font: 700 22px Arial, sans-serif; fill: #f8fafc; }
+      .name { font: 700 19px Arial, sans-serif; fill: #f8fafc; }
+      .detail { font: 400 14px Arial, sans-serif; fill: #dbeafe; }
+      .brand { font: 700 18px Arial, sans-serif; fill: #fff; text-anchor: middle; dominant-baseline: middle; }
+      .card { stroke: #64748b; stroke-width: 1.5; rx: 16; filter: url(#shadow); }
+      .arrow { stroke: #93c5fd; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #64748b; stroke-width: 2; stroke-dasharray: 8 8; fill: none; }
+    </style>
+  </defs>
+  <rect width="1800" height="980" fill="url(#background)"/>
+  <text x="70" y="62" class="title">Lakehouse de dados - arquitetura atual</text>
+  <text x="70" y="94" class="subtitle">Fluxos Batch e Streaming separados, com Bronze Parquet, Silver Delta e Gold analitico</text>
+
+  <text x="70" y="145" class="section">Fluxo Batch - Azure SQL</text>
+  <rect x="70" y="175" width="250" height="130" class="card" fill="#075985"/><circle cx="130" cy="225" r="34" fill="#0ea5e9"/><text x="130" y="225" class="brand">SQL</text><text x="180" y="220" class="name">Azure SQL</text><text x="180" y="248" class="detail">Fonte relacional</text><text x="95" y="282" class="detail">updated_at ou carga full</text>
+  <rect x="410" y="175" width="250" height="130" class="card" fill="#312e81"/><circle cx="470" cy="225" r="34" fill="#f97316"/><text x="470" y="225" class="brand">DBX</text><text x="520" y="220" class="name">Databricks</text><text x="520" y="248" class="detail">PySpark / Jobs</text><text x="435" y="282" class="detail">Asset Bundles + Serverless</text>
+  <rect x="750" y="175" width="250" height="130" class="card" fill="#713f12"/><circle cx="810" cy="225" r="34" fill="#f59e0b"/><text x="810" y="225" class="brand">S3</text><text x="860" y="220" class="name">Amazon S3</text><text x="860" y="248" class="detail">Data Lake</text><text x="775" y="282" class="detail">Bronze Parquet / Delta</text>
+  <rect x="1090" y="175" width="250" height="130" class="card" fill="#164e63"/><circle cx="1150" cy="225" r="34" fill="#06b6d4"/><text x="1150" y="225" class="brand">DELTA</text><text x="1200" y="220" class="name">Delta Lake</text><text x="1200" y="248" class="detail">Silver tratada</text><text x="1115" y="282" class="detail">Qualidade e auditoria</text>
+  <rect x="1430" y="175" width="250" height="130" class="card" fill="#581c87"/><circle cx="1490" cy="225" r="34" fill="#a855f7"/><text x="1490" y="225" class="brand">dbt</text><text x="1540" y="220" class="name">dbt</text><text x="1540" y="248" class="detail">Modelos Gold</text><text x="1455" y="282" class="detail">Testes e dependencias</text>
+  <path d="M320 240 H400 M660 240 H740 M1000 240 H1080 M1340 240 H1420" class="arrow"/>
+
+  <text x="70" y="390" class="section">Fluxo Streaming - Amazon Kinesis</text>
+  <rect x="70" y="420" width="300" height="140" class="card" fill="#4c1d95"/><circle cx="140" cy="480" r="36" fill="#7c3aed"/><text x="140" y="480" class="brand">K</text><text x="195" y="475" class="name">Amazon Kinesis</text><text x="195" y="503" class="detail">Data Streams</text><text x="95" y="540" class="detail">Eventos de vendas</text>
+  <rect x="470" y="420" width="300" height="140" class="card" fill="#312e81"/><circle cx="540" cy="480" r="36" fill="#f97316"/><text x="540" y="480" class="brand">DBX</text><text x="595" y="475" class="name">Databricks</text><text x="595" y="503" class="detail">AvailableNow</text><text x="495" y="540" class="detail">Micro-lotes no Serverless</text>
+  <rect x="870" y="420" width="300" height="140" class="card" fill="#713f12"/><circle cx="940" cy="480" r="36" fill="#f59e0b"/><text x="940" y="480" class="brand">S3</text><text x="995" y="475" class="name">Bronze Kinesis</text><text x="995" y="503" class="detail">Parquet</text><text x="895" y="540" class="detail">Checkpoint independente</text>
+  <rect x="1270" y="420" width="300" height="140" class="card" fill="#164e63"/><circle cx="1340" cy="480" r="36" fill="#06b6d4"/><text x="1340" y="480" class="brand">DELTA</text><text x="1395" y="475" class="name">Streaming Silver</text><text x="1395" y="503" class="detail">Delta + MERGE</text><text x="1295" y="540" class="detail">event_id + item_position</text>
+  <path d="M370 490 H460 M770 490 H860 M1170 490 H1260" class="arrow"/>
+
+  <text x="70" y="655" class="section">Governanca e consumo analitico</text>
+  <rect x="70" y="690" width="350" height="130" class="card" fill="#1e3a8a"/><circle cx="140" cy="750" r="34" fill="#2563eb"/><text x="140" y="750" class="brand">UC</text><text x="195" y="745" class="name">Unity Catalog</text><text x="195" y="773" class="detail">Tabelas e views governadas</text><text x="95" y="805" class="detail">main.silver / main.gold</text>
+  <rect x="510" y="690" width="350" height="130" class="card" fill="#134e4a"/><circle cx="580" cy="750" r="34" fill="#14b8a6"/><text x="580" y="750" class="brand">Q</text><text x="635" y="745" class="name">Qualidade</text><text x="635" y="773" class="detail">Pytest, reconciliacao e LGPD</text><text x="535" y="805" class="detail">Auditoria por execucao</text>
+  <rect x="950" y="690" width="350" height="130" class="card" fill="#365314"/><circle cx="1020" cy="750" r="34" fill="#84cc16"/><text x="1020" y="750" class="brand">VS</text><text x="1075" y="745" class="name">VS Code</text><text x="1075" y="773" class="detail">Desenvolvimento e Git Flow</text><text x="975" y="805" class="detail">Deploy por Bundle</text>
+  <rect x="1390" y="690" width="350" height="130" class="card" fill="#3f1d78"/><circle cx="1460" cy="750" r="34" fill="#8b5cf6"/><text x="1460" y="750" class="brand">DBX</text><text x="1515" y="745" class="name">Databricks SQL</text><text x="1515" y="773" class="detail">Consultas e consumo</text><text x="1415" y="805" class="detail">Warehouse Serverless</text>
+  <text x="70" y="910" class="subtitle">Batch e Streaming permanecem separados na Silver; a consolidacao na Gold ocorre somente com contrato de dados definido.</text>
+</svg>

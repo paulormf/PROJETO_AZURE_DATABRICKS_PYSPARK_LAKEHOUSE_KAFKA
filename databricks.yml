@@ -627,6 +627,12 @@ resources:
     kinesis_bronze_ingestion:
       name: "${bundle.name}-${bundle.target}-kinesis-bronze"
       max_concurrent_runs: 1
+      environments:
+        - environment_key: dbt_serverless
+          spec:
+            environment_version: "2"
+            dependencies:
+              - "dbt-databricks>=1.6.0,<2.0.0"
       tasks:
         - task_key: kinesis_to_bronze
           notebook_task:
@@ -646,6 +652,29 @@ resources:
             base_parameters:
               bronze_path: "s3://lakehouse-prj-db-kafka/lakehouse/bronze/kinesis/sales-events/"
               silver_path: "s3://lakehouse-prj-db-kafka/lakehouse/silver/kinesis/sales-events/"
+
+        - task_key: register_kinesis_silver
+          depends_on:
+            - task_key: kinesis_to_silver
+          sql_task:
+            file:
+              path: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}/vscode/files/sql/register_silver_external_tables.sql"
+              source: WORKSPACE
+            warehouse_id: ${var.sql_warehouse_id}
+
+        - task_key: gold_streaming_dbt
+          depends_on:
+            - task_key: register_kinesis_silver
+          environment_key: dbt_serverless
+          dbt_task:
+            commands:
+              - "dbt deps"
+              - "dbt build --select +fct_streaming_sales"
+            project_directory: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}/vscode/files/dbt"
+            source: WORKSPACE
+            warehouse_id: ${var.sql_warehouse_id}
+            catalog: main
+            schema: default
 
     performance_baseline:
       name: "${bundle.name}-${bundle.target}-performance-baseline"
