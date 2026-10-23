@@ -26,7 +26,7 @@ s3://lakehouse-prj-db-kafka/lakehouse/silver/kinesis/sales-events/
 A tabela Delta e registrada no Unity Catalog como:
 
 ```text
-main.silver.kinesis_sales_events
+main.<ambiente>_silver.kinesis_sales_events
 ```
 
 Essa camada usa `event_id` e `item_position` para deduplicacao e `MERGE` idempotente. A futura camada Gold de Streaming sera mantida separada do fato batch do Azure SQL.
@@ -171,7 +171,7 @@ Os Jobs são definidos em [databricks.yml](databricks.yml):
 - monitoramento e qualidade;
 - baseline de performance.
 
-O pipeline Silver/Gold possui execução diária e `max_concurrent_runs: 1` para impedir sobreposição de execuções.
+Os jobs Silver/Gold possuem agendamento diário e `max_concurrent_runs: 1`, mas permanecem pausados no Databricks Free. A execução é feita manualmente durante testes e demonstrações.
 
 ## Estrutura do projeto
 
@@ -218,22 +218,24 @@ dbt build --select +fct_sales_daily
 
 Credenciais e tokens não devem ser versionados. O arquivo `.env` é local e está excluído do Bundle; utilize `.env.example` como referência.
 
-## Próximas etapas
-
-- Criar o modelo Gold separado para os eventos de Streaming.
-- Adicionar testes dbt para `main.silver.kinesis_sales_events`.
-- Definir uma estratégia de consolidação somente se houver contrato de dados entre Kinesis e Azure SQL.
-
 ## Status atualizado do Streaming
 
 O fluxo Kinesis ja foi implementado ate a Gold de Streaming e registrado no Unity Catalog. A Gold permanece separada do fato `fct_sales_daily` e nao mistura automaticamente os dados com `order_items` do Azure SQL.
 
 O Job tambem executa o notebook [09_kinesis_quality_monitoring.py](notebooks/09_kinesis_quality_monitoring.py), que valida chaves, duplicidades, valores, timestamps e a existencia de registros na Gold.
 
+## Documentacao operacional
+
+- [Checklist de prontidao para producao](docs/production_readiness.md)
+- [Runbook operacional](docs/operations_runbook.md)
+- [Plano do Kinesis](docs/kinesis_plan.md)
+- [Diagrama da arquitetura batch](docs/architecture.svg)
+- [Diagrama da arquitetura batch e streaming](docs/architecture_streaming.svg)
+
 ## Observabilidade
 
-O notebook [10_observability_metrics.py](notebooks/10_observability_metrics.py) consolida metricas dos fluxos batch e Streaming em `main.monitoring`. As consultas para montar um dashboard no Databricks SQL estao em [observability_dashboard_queries.sql](sql/observability_dashboard_queries.sql).
+O notebook [10_observability_metrics.py](notebooks/10_observability_metrics.py) consolida metricas dos fluxos batch e Streaming em `main.dev_monitoring` ou `main.prod_monitoring`. As consultas de desenvolvimento estao em [observability_dashboard_queries.sql](sql/observability_dashboard_queries.sql), e as de producao em [observability_dashboard_queries_prod.sql](sql/observability_dashboard_queries_prod.sql).
 
 O dashboard deve apresentar status de execucao, volume processado, qualidade, falhas e disponibilidade dos pipelines. Planilhas ficam restritas a analises pontuais; o historico oficial permanece em tabelas Delta governadas.
 
-As consultas de alerta estao em [alert_queries.sql](sql/alert_queries.sql). Cada consulta deve ser criada como um SQL Alert no Databricks, com notificacao para falha de qualidade, falha de ingestao ou ausencia de dados na Gold.
+As consultas de alerta estao em [alert_queries.sql](sql/alert_queries.sql) para `dev` e [alert_queries_prod.sql](sql/alert_queries_prod.sql) para `prod`. Cada consulta deve ser criada como um SQL Alert no Databricks, com notificacao para falha de qualidade, falha de ingestao ou ausencia de dados na Gold.
