@@ -76,7 +76,7 @@ resources:
         - name: last_watermark
           default: ""
         - name: watermark_path
-          default: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+          default: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
       tasks:
         - task_key: bronze_ingestion
           notebook_task:
@@ -99,7 +99,7 @@ resources:
               load_mode: incremental
               watermark_column: updated_at
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_carriers
           notebook_task:
@@ -112,7 +112,7 @@ resources:
               load_mode: full
               watermark_column: ""
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_brands
           notebook_task:
@@ -125,7 +125,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_campaigns
           notebook_task:
@@ -138,7 +138,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_categories
           notebook_task:
@@ -151,7 +151,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_customer_addresses
           notebook_task:
@@ -164,7 +164,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_customer_campaigns
           notebook_task:
@@ -177,7 +177,7 @@ resources:
               load_mode: full
               watermark_column: ""
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_customer_contacts
           notebook_task:
@@ -190,7 +190,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_customers
           notebook_task:
@@ -203,7 +203,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_departments
           notebook_task:
@@ -216,7 +216,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_employees
           notebook_task:
@@ -229,7 +229,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_inventory_balance
           notebook_task:
@@ -242,7 +242,7 @@ resources:
               load_mode: full
               watermark_column: ""
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_inventory_movements
           notebook_task:
@@ -255,7 +255,7 @@ resources:
               load_mode: full
               watermark_column: ""
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_order_items
           notebook_task:
@@ -268,7 +268,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_orders
           notebook_task:
@@ -281,7 +281,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_payment_transactions
           notebook_task:
@@ -294,7 +294,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_payments
           notebook_task:
@@ -307,7 +307,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_returns
           notebook_task:
@@ -320,7 +320,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_sales_channels
           notebook_task:
@@ -333,7 +333,7 @@ resources:
               load_mode: full
               watermark_column: ""
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_shipments
           notebook_task:
@@ -346,7 +346,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_suppliers
           notebook_task:
@@ -359,7 +359,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
         - task_key: bronze_warehouses
           notebook_task:
@@ -372,7 +372,7 @@ resources:
               load_mode: incremental
               watermark_column: "updated_at"
               last_watermark: ""
-              watermark_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/"
+              watermark_path: "${var.lakehouse_root}/control/bronze_watermarks_v2/"
 
     silver_two_tables:
       name: "${bundle.name}-${bundle.target}-silver-gold"
