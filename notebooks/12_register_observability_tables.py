@@ -50,8 +50,10 @@ registered_tables = []
 for table in tables:
     location = f"{lakehouse_root}/control/observability/{table}/"
     if delta_path_has_columns(location):
+        # Remove somente o registro externo; os dados continuam no S3.
+        spark.sql(f"DROP TABLE IF EXISTS {namespace}.{table}")
         spark.sql(
-            f"CREATE OR REPLACE TABLE {namespace}.{table} "
+            f"CREATE TABLE {namespace}.{table} "
             f"USING DELTA LOCATION '{location}'"
         )
         registered_tables.append(table)
