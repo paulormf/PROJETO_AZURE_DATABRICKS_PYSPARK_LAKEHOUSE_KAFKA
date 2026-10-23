@@ -46,7 +46,6 @@ for identifier_name, identifier_value in {
 from functools import reduce
 import uuid
 
-from pyspark import StorageLevel
 from pyspark.sql import functions as F
 
 bronze_path = (
@@ -104,7 +103,6 @@ else:
 
 print(f"Bronze rows read: {bronze_rows}")
 
-df_silver = df_silver.persist(StorageLevel.MEMORY_AND_DISK)
 silver_rows = df_silver.count()
 duplicate_or_invalid_rows = bronze_rows - silver_rows
 print(f"Rows with null primary key: {null_key_rows}")
@@ -122,8 +120,6 @@ df_silver = df_silver.withColumn(
     .option("overwriteSchema", "true")
     .save(silver_path)
 )
-df_silver.unpersist()
-
 validated_rows = spark.read.format("delta").load(silver_path).count()
 print(f"Silver rows written: {validated_rows}")
 
