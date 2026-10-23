@@ -632,11 +632,11 @@ resources:
           notebook_task:
             notebook_path: ./notebooks/07_kinesis_to_bronze.py
             base_parameters:
-              stream_name: lakehouse-sales-events
+              stream_arn: "arn:aws:kinesis:us-east-1:693000032696:stream/lakehouse-sales-events"
               aws_region: us-east-1
               bronze_path: "s3://lakehouse-prj-db-kafka/lakehouse/bronze/kinesis/sales-events/"
-              checkpoint_path: "s3://lakehouse-prj-db-kafka/lakehouse/checkpoints/kinesis/sales-events/"
-              initial_position: trim_horizon
+              checkpoint_path: "s3://lakehouse-prj-db-kafka/lakehouse/checkpoints/kinesis/sales-events-v8/"
+              initial_position: earliest
 
     performance_baseline:
       name: "${bundle.name}-${bundle.target}-performance-baseline"

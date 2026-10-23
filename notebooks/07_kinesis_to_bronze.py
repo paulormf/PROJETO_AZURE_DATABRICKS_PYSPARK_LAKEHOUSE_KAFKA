@@ -6,7 +6,10 @@ from pyspark.sql import functions as F
 
 # COMMAND ----------
 
-dbutils.widgets.text("stream_name", "lakehouse-sales-events")
+dbutils.widgets.text(
+    "stream_arn",
+    "arn:aws:kinesis:us-east-1:693000032696:stream/lakehouse-sales-events",
+)
 dbutils.widgets.text("aws_region", "us-east-1")
 dbutils.widgets.text(
     "bronze_path",
@@ -16,19 +19,20 @@ dbutils.widgets.text(
     "checkpoint_path",
     "s3://lakehouse-prj-db-kafka/lakehouse/checkpoints/kinesis/sales-events/",
 )
-dbutils.widgets.text("initial_position", "trim_horizon")
+dbutils.widgets.text("initial_position", "earliest")
 
-stream_name = dbutils.widgets.get("stream_name")
+stream_arn = dbutils.widgets.get("stream_arn")
 aws_region = dbutils.widgets.get("aws_region")
 bronze_path = dbutils.widgets.get("bronze_path")
 checkpoint_path = dbutils.widgets.get("checkpoint_path")
 initial_position = dbutils.widgets.get("initial_position").lower()
 
-print(f"Stream: {stream_name}")
+print(f"Stream ARN: {stream_arn}")
 print(f"Região: {aws_region}")
 print(f"Bronze path: {bronze_path}")
 print(f"Checkpoint path: {checkpoint_path}")
 print(f"Posição inicial: {initial_position}")
+print("Trigger: availableNow")
 
 
 # COMMAND ----------
@@ -38,12 +42,13 @@ aws_secret_key = dbutils.secrets.get(scope="aws-kinesis", key="secret-key")
 
 df_kinesis = (
     spark.readStream.format("kinesis")
-    .option("streamName", stream_name)
+    .option("streamARN", stream_arn)
     .option("region", aws_region)
     .option("awsAccessKey", aws_access_key)
     .option("awsSecretKey", aws_secret_key)
     .option("initialPosition", initial_position)
     .option("consumerMode", "polling")
+    .option("maxFetchDuration", "60s")
     .option("failOnDataLoss", "true")
     .load()
 )
@@ -68,15 +73,28 @@ query = (
     .trigger(availableNow=True)
     .start(bronze_path)
 )
-
 query.awaitTermination()
 
-progress = query.lastProgress
-if progress:
-    print(f"Batch ID: {progress.get('batchId')}")
-    print(f"Registros processados: {progress.get('numInputRows')}")
-    for source in progress.get("sources", []):
-        print(f"Métricas da fonte: {source.get('metrics', {})}")
+progress_events = list(query.recentProgress)
+if progress_events:
+    total_records = 0
+    print(f"Micro-lotes executados: {len(progress_events)}")
+
+    for progress in progress_events:
+        batch_id = progress.get("batchId")
+        batch_records = 0
+
+        for source in progress.get("sources", []):
+            metrics = source.get("metrics", {})
+            source_records = int(metrics.get("numProcessedRecords", 0) or 0)
+            batch_records += source_records
+            print(f"Batch ID: {batch_id}")
+            print(f"Registros no batch: {source_records}")
+            print(f"Métricas da fonte: {metrics}")
+
+        total_records += batch_records
+
+    print(f"Total de eventos processados: {total_records}")
 else:
     print("Nenhum evento novo foi encontrado no Kinesis.")
 
