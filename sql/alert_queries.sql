@@ -1,3 +1,6 @@
+-- Ambiente atual: dev.
+-- Para producao, substitua main.dev_monitoring por main.prod_monitoring.
+
 -- Alerta 1: checks de qualidade reprovados no batch Azure SQL.
 SELECT
     pipeline,
@@ -5,7 +8,7 @@ SELECT
     check_name,
     observed_value,
     checked_at
-FROM main.monitoring.batch_quality
+FROM main.dev_monitoring.batch_quality
 WHERE passed = false
   AND checked_at >= current_timestamp() - INTERVAL 1 DAY;
 
@@ -16,7 +19,7 @@ SELECT
     check_name,
     observed_value,
     checked_at
-FROM main.monitoring.streaming_quality
+FROM main.dev_monitoring.streaming_quality
 WHERE passed = false
   AND checked_at >= current_timestamp() - INTERVAL 1 DAY;
 
@@ -26,7 +29,7 @@ SELECT
     source_table,
     status,
     processed_at
-FROM main.monitoring.batch_ingestion_audit
+FROM main.dev_monitoring.batch_ingestion_audit
 WHERE status <> 'SUCCESS'
   AND processed_at >= current_timestamp() - INTERVAL 1 DAY;
 
@@ -43,6 +46,6 @@ SELECT
     metric_name,
     metric_value,
     observed_at
-FROM main.monitoring.pipeline_summary
+FROM main.dev_monitoring.pipeline_summary
 WHERE metric_value = false
   AND observed_at >= current_timestamp() - INTERVAL 1 DAY;

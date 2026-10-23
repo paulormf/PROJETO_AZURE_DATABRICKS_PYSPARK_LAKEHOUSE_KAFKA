@@ -1,8 +1,11 @@
+-- Ambiente atual: dev.
+-- Para producao, substitua main.dev_monitoring por main.prod_monitoring.
+
 -- KPI: execucoes batch por status
 SELECT
     status,
     COUNT(*) AS executions
-FROM main.monitoring.batch_ingestion_audit
+FROM main.dev_monitoring.batch_ingestion_audit
 GROUP BY status
 ORDER BY status;
 
@@ -15,7 +18,7 @@ SELECT
     rows_removed,
     status,
     processed_at
-FROM main.monitoring.batch_ingestion_audit
+FROM main.dev_monitoring.batch_ingestion_audit
 QUALIFY ROW_NUMBER() OVER (
     PARTITION BY source_schema, source_table
     ORDER BY processed_at DESC
@@ -29,7 +32,7 @@ SELECT
     check_name,
     observed_value,
     checked_at
-FROM main.monitoring.batch_quality
+FROM main.dev_monitoring.batch_quality
 WHERE passed = false
 ORDER BY checked_at DESC;
 
@@ -40,7 +43,7 @@ SELECT
     passed,
     observed_value,
     checked_at
-FROM main.monitoring.streaming_quality
+FROM main.dev_monitoring.streaming_quality
 ORDER BY checked_at DESC;
 
 -- Disponibilidade dos pipelines
@@ -49,5 +52,5 @@ SELECT
     metric_name,
     metric_value,
     observed_at
-FROM main.monitoring.pipeline_summary
+FROM main.dev_monitoring.pipeline_summary
 ORDER BY observed_at DESC;
