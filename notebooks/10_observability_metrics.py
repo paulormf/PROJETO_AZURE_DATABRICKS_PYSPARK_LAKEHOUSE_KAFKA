@@ -8,6 +8,15 @@ from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 
 
+dbutils.widgets.text(
+    "lakehouse_root",
+    "s3://lakehouse-prj-db-kafka/lakehouse/dev",
+)
+LAKEHOUSE_ROOT = dbutils.widgets.get("lakehouse_root").strip().rstrip("/")
+if not LAKEHOUSE_ROOT:
+    raise ValueError("lakehouse_root is required.")
+
+
 TABLES = [
     "brands", "campaigns", "carriers", "categories",
     "customer_addresses", "customer_campaigns", "customer_contacts",
@@ -17,10 +26,10 @@ TABLES = [
     "sales_channels", "shipments", "suppliers", "warehouses",
 ]
 
-BATCH_AUDIT_OUTPUT = "s3://lakehouse-prj-db-kafka/lakehouse/control/observability/batch_ingestion_audit/"
-BATCH_QUALITY_OUTPUT = "s3://lakehouse-prj-db-kafka/lakehouse/control/observability/batch_quality/"
-STREAMING_QUALITY_PATH = "s3://lakehouse-prj-db-kafka/lakehouse/control/kinesis_quality/"
-STREAMING_OUTPUT = "s3://lakehouse-prj-db-kafka/lakehouse/control/observability/streaming_quality/"
+BATCH_AUDIT_OUTPUT = f"{LAKEHOUSE_ROOT}/control/observability/batch_ingestion_audit/"
+BATCH_QUALITY_OUTPUT = f"{LAKEHOUSE_ROOT}/control/observability/batch_quality/"
+STREAMING_QUALITY_PATH = f"{LAKEHOUSE_ROOT}/control/kinesis_quality/"
+STREAMING_OUTPUT = f"{LAKEHOUSE_ROOT}/control/observability/streaming_quality/"
 
 
 def read_delta_paths(paths: list[str]) -> DataFrame | None:

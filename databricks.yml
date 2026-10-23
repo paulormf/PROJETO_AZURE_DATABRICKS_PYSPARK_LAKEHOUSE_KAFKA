@@ -664,8 +664,8 @@ resources:
             base_parameters:
               stream_arn: "arn:aws:kinesis:us-east-1:693000032696:stream/lakehouse-sales-events"
               aws_region: us-east-1
-              bronze_path: "s3://lakehouse-prj-db-kafka/lakehouse/bronze/kinesis/sales-events/"
-              checkpoint_path: "s3://lakehouse-prj-db-kafka/lakehouse/checkpoints/kinesis/sales-events-v8/"
+              bronze_path: "${var.lakehouse_root}/bronze/kinesis/sales-events/"
+              checkpoint_path: "${var.lakehouse_root}/checkpoints/kinesis/sales-events-v8/"
               initial_position: earliest
 
         - task_key: kinesis_to_silver
@@ -674,8 +674,8 @@ resources:
           notebook_task:
             notebook_path: ./notebooks/08_kinesis_silver_delta.py
             base_parameters:
-              bronze_path: "s3://lakehouse-prj-db-kafka/lakehouse/bronze/kinesis/sales-events/"
-              silver_path: "s3://lakehouse-prj-db-kafka/lakehouse/silver/kinesis/sales-events/"
+              bronze_path: "${var.lakehouse_root}/bronze/kinesis/sales-events/"
+              silver_path: "${var.lakehouse_root}/silver/kinesis/sales-events/"
 
         - task_key: register_kinesis_silver
           depends_on:
@@ -697,8 +697,8 @@ resources:
             project_directory: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}/vscode/files/dbt"
             source: WORKSPACE
             warehouse_id: ${var.sql_warehouse_id}
-            catalog: main
-            schema: default
+            catalog: ${var.unity_catalog}
+            schema: ${var.gold_schema}
 
         - task_key: kinesis_quality_monitoring
           depends_on:
@@ -706,9 +706,9 @@ resources:
           notebook_task:
             notebook_path: ./notebooks/09_kinesis_quality_monitoring.py
             base_parameters:
-              silver_path: "s3://lakehouse-prj-db-kafka/lakehouse/silver/kinesis/sales-events/"
-              quality_path: "s3://lakehouse-prj-db-kafka/lakehouse/control/kinesis_quality/"
-              gold_table: "main.default_gold.fct_streaming_sales"
+              silver_path: "${var.lakehouse_root}/silver/kinesis/sales-events/"
+              quality_path: "${var.lakehouse_root}/control/kinesis_quality/"
+              gold_table: "${var.unity_catalog}.${var.gold_schema}.fct_streaming_sales"
 
     performance_baseline:
       name: "${bundle.name}-${bundle.target}-performance-baseline"
@@ -732,6 +732,8 @@ resources:
         - task_key: consolidate_observability
           notebook_task:
             notebook_path: ./notebooks/10_observability_metrics.py
+            base_parameters:
+              lakehouse_root: ${var.lakehouse_root}
         - task_key: register_observability_tables
           depends_on:
             - task_key: consolidate_observability
