@@ -624,6 +624,20 @@ resources:
           notebook_task:
             notebook_path: ./notebooks/04_monitoring_quality.py
 
+    kinesis_bronze_ingestion:
+      name: "${bundle.name}-${bundle.target}-kinesis-bronze"
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: kinesis_to_bronze
+          notebook_task:
+            notebook_path: ./notebooks/07_kinesis_to_bronze.py
+            base_parameters:
+              stream_name: lakehouse-sales-events
+              aws_region: us-east-1
+              bronze_path: "s3://lakehouse-prj-db-kafka/lakehouse/bronze/kinesis/sales-events/"
+              checkpoint_path: "s3://lakehouse-prj-db-kafka/lakehouse/checkpoints/kinesis/sales-events/"
+              initial_position: trim_horizon
+
     performance_baseline:
       name: "${bundle.name}-${bundle.target}-performance-baseline"
       tasks:

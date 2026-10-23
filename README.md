@@ -38,7 +38,7 @@ Databricks + PySpark
 - Databricks Asset Bundles: implantação como código.
 - Pytest: testes locais da aplicação e dos planos de ingestão.
 
-Kafka será adicionado em uma etapa posterior como fluxo de streaming separado do pipeline batch.
+Kinesis será adicionado em uma etapa posterior como fluxo de streaming separado do pipeline batch.
 
 ## Camadas de dados
 
@@ -146,6 +146,7 @@ O pipeline Silver/Gold possui execução diária e `max_concurrent_runs: 1` para
 config/                 Configurações de conexão
 discover/               Descoberta do catálogo e plano de ingestão
 notebooks/              Ingestão, Silver, monitoramento e performance
+streaming/              Produtores e consumidores de eventos Kinesis
 dbt/                    Modelos, testes e configuração dbt
 sql/                    Scripts de registro e governança
 tests/                  Testes locais com Pytest
@@ -186,4 +187,4 @@ Credenciais e tokens não devem ser versionados. O arquivo `.env` é local e est
 
 ## Próxima etapa
 
-A próxima evolução será adicionar Kafka com Structured Streaming, checkpoint e carga incremental na Bronze. O fluxo Kafka será mantido separado do fluxo batch para permitir operação, monitoramento e reprocessamento independentes.
+A próxima evolução será adicionar Kinesis com Structured Streaming, checkpoint e carga incremental na Bronze. O fluxo Kinesis será mantido separado do fluxo batch para permitir operação, monitoramento e reprocessamento independentes.
