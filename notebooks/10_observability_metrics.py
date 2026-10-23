@@ -76,7 +76,10 @@ if batch_audit is not None:
         batch_audit
         .withColumn("pipeline", F.lit("batch_azure_sql"))
         .withColumn("observed_at", F.current_timestamp())
-        .write.format("delta").mode("overwrite").save(BATCH_AUDIT_OUTPUT)
+        .write.format("delta")
+        .mode("overwrite")
+        .option("overwriteSchema", "true")
+        .save(BATCH_AUDIT_OUTPUT)
     )
     print(f"Batch audit rows: {batch_audit.count()}")
 
@@ -85,7 +88,10 @@ if batch_quality is not None:
         batch_quality
         .withColumn("pipeline", F.lit("batch_azure_sql"))
         .withColumn("observed_at", F.current_timestamp())
-        .write.format("delta").mode("overwrite").save(BATCH_QUALITY_OUTPUT)
+        .write.format("delta")
+        .mode("overwrite")
+        .option("overwriteSchema", "true")
+        .save(BATCH_QUALITY_OUTPUT)
     )
     print(f"Batch quality rows: {batch_quality.count()}")
 
@@ -103,7 +109,10 @@ if streaming_quality is not None:
         streaming_quality
         .withColumn("pipeline", F.lit("streaming_kinesis"))
         .withColumn("observed_at", F.current_timestamp())
-        .write.format("delta").mode("overwrite").save(STREAMING_OUTPUT)
+        .write.format("delta")
+        .mode("overwrite")
+        .option("overwriteSchema", "true")
+        .save(STREAMING_OUTPUT)
     )
     print(f"Streaming quality rows: {streaming_quality.count()}")
 
