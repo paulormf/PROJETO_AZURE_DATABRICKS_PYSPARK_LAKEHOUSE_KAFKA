@@ -8,6 +8,10 @@ dbutils.widgets.text("load_mode", "full")
 dbutils.widgets.text("watermark_column", "")
 dbutils.widgets.text("last_watermark", "")
 dbutils.widgets.text(
+    "lakehouse_root",
+    "s3://lakehouse-prj-db-kafka/lakehouse/dev",
+)
+dbutils.widgets.text(
     "watermark_path",
     "s3://lakehouse-prj-db-kafka/lakehouse/control/bronze_watermarks_v2/",
 )
@@ -17,7 +21,11 @@ source_table = dbutils.widgets.get("source_table").strip()
 load_mode = dbutils.widgets.get("load_mode").strip().lower()
 watermark_column = dbutils.widgets.get("watermark_column").strip()
 last_watermark = dbutils.widgets.get("last_watermark").strip()
+lakehouse_root = dbutils.widgets.get("lakehouse_root").strip().rstrip("/")
 watermark_root = dbutils.widgets.get("watermark_path").strip()
+
+if not lakehouse_root:
+    raise ValueError("lakehouse_root is required.")
 
 if load_mode not in {"full", "incremental"}:
     raise ValueError("load_mode must be 'full' or 'incremental'.")
@@ -142,8 +150,7 @@ if rows_read == 0:
 # COMMAND ----------
 
 bronze_path = (
-    "s3://lakehouse-prj-db-kafka/"
-    f"lakehouse/bronze/azure_sql/{source_schema}/{source_table}/"
+    f"{lakehouse_root}/bronze/azure_sql/{source_schema}/{source_table}/"
 )
 
 df_bronze = (

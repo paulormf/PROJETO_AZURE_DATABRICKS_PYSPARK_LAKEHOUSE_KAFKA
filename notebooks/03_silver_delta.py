@@ -5,6 +5,10 @@
 dbutils.widgets.text("source_schema", "dbo")
 dbutils.widgets.text("source_table", "products")
 dbutils.widgets.text("primary_keys", "")
+dbutils.widgets.text(
+    "lakehouse_root",
+    "s3://lakehouse-prj-db-kafka/lakehouse/dev",
+)
 
 source_schema = dbutils.widgets.get("source_schema").strip()
 source_table = dbutils.widgets.get("source_table").strip()
@@ -13,6 +17,10 @@ primary_keys = [
     for key in dbutils.widgets.get("primary_keys").split(",")
     if key.strip()
 ]
+lakehouse_root = dbutils.widgets.get("lakehouse_root").strip().rstrip("/")
+
+if not lakehouse_root:
+    raise ValueError("lakehouse_root is required.")
 
 if not source_schema or not source_table:
     raise ValueError("source_schema and source_table are required.")
@@ -42,20 +50,16 @@ from pyspark import StorageLevel
 from pyspark.sql import functions as F
 
 bronze_path = (
-    "s3://lakehouse-prj-db-kafka/"
-    f"lakehouse/bronze/azure_sql/{source_schema}/{source_table}/"
+    f"{lakehouse_root}/bronze/azure_sql/{source_schema}/{source_table}/"
 )
 silver_path = (
-    "s3://lakehouse-prj-db-kafka/"
-    f"lakehouse/silver/azure_sql/{source_schema}/{source_table}/"
+    f"{lakehouse_root}/silver/azure_sql/{source_schema}/{source_table}/"
 )
 audit_path = (
-    "s3://lakehouse-prj-db-kafka/"
-    f"lakehouse/control/ingestion_audit/{source_schema}/{source_table}/"
+    f"{lakehouse_root}/control/ingestion_audit/{source_schema}/{source_table}/"
 )
 quality_path = (
-    "s3://lakehouse-prj-db-kafka/"
-    f"lakehouse/control/data_quality_results/{source_schema}/{source_table}/"
+    f"{lakehouse_root}/control/data_quality_results/{source_schema}/{source_table}/"
 )
 run_id = str(uuid.uuid4())
 

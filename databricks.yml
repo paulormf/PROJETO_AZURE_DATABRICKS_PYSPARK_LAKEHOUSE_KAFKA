@@ -51,6 +51,8 @@ resources:
           default: ${var.azsql_host}
         - name: sql_database
           default: ${var.azsql_database}
+        - name: lakehouse_root
+          default: ${var.lakehouse_root}
       tasks:
         - task_key: test_azsql_to_s3
           notebook_task:
@@ -82,6 +84,9 @@ resources:
 
     bronze_two_tables:
       name: "${bundle.name}-${bundle.target}-bronze-two-tables"
+      parameters:
+        - name: lakehouse_root
+          default: ${var.lakehouse_root}
       tasks:
         - task_key: bronze_products
           notebook_task:
@@ -371,6 +376,9 @@ resources:
 
     silver_two_tables:
       name: "${bundle.name}-${bundle.target}-silver-gold"
+      parameters:
+        - name: lakehouse_root
+          default: ${var.lakehouse_root}
       schedule:
         quartz_cron_expression: "0 0 2 * * ?"
         timezone_id: "America/Sao_Paulo"
