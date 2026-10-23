@@ -638,6 +638,15 @@ resources:
               checkpoint_path: "s3://lakehouse-prj-db-kafka/lakehouse/checkpoints/kinesis/sales-events-v8/"
               initial_position: earliest
 
+        - task_key: kinesis_to_silver
+          depends_on:
+            - task_key: kinesis_to_bronze
+          notebook_task:
+            notebook_path: ./notebooks/08_kinesis_silver_delta.py
+            base_parameters:
+              bronze_path: "s3://lakehouse-prj-db-kafka/lakehouse/bronze/kinesis/sales-events/"
+              silver_path: "s3://lakehouse-prj-db-kafka/lakehouse/silver/kinesis/sales-events/"
+
     performance_baseline:
       name: "${bundle.name}-${bundle.target}-performance-baseline"
       tasks:
