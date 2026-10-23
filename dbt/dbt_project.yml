@@ -16,6 +16,7 @@ vars:
   # Ajustaremos este catálogo depois de confirmar o catálogo Unity Catalog
   # disponível no workspace.
   lakehouse_catalog: main
+  silver_schema: silver
 
 models:
   lakehouse_analytics:
